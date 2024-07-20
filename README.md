@@ -2,11 +2,13 @@
 
 Source code for the Redbean Project.
 
+## Info
+
+This project uses [Twilio](https://www.twilio.com/en-us) to handle phone calls. A Twilio Voice number will need to be set up with the webhook pointing to this applcation.
+
 ## Setup
 
-Start by installing via system package manager: `ngrok ffmpeg`
-
-You will need to authenticate to ngrok after installing it.
+You will need to install `ngrok` and `ffmpeg` via your system's package manager. Afterwards, configure/authenticate to ngrok.
 
 Create a Python virtual environment and install dependencies:
 
