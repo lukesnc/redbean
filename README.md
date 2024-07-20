@@ -10,11 +10,12 @@ You will need to install `ngrok` via your system's package manager. After authen
 ./scripts/ngrok-start.sh
 ```
 
-Create a Python virtual environment:
+Create a Python virtual environment and install dependencies:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ## Usage
