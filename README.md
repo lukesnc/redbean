@@ -4,11 +4,7 @@ Source code for the Redbean Project.
 
 ## Setup
 
-You will need to install `ngrok` via your system's package manager. After authenticating, start ngrok with:
-
-```bash
-./scripts/ngrok-start.sh
-```
+You will need to install `ngrok` via your system's package manager. Then authenticate to ngrok.
 
 Create a Python virtual environment and install dependencies:
 
@@ -19,6 +15,12 @@ pip install -r requirements.txt
 ```
 
 ## Usage
+
+First start ngrok in the background:
+
+```bash
+./scripts/ngrok-start.sh
+```
 
 Start the app with:
 
