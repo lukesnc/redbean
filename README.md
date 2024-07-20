@@ -4,7 +4,9 @@ Source code for the Redbean Project.
 
 ## Setup
 
-You will need to install `ngrok` via your system's package manager. Then authenticate to ngrok.
+Start by installing via system package manager: `ngrok ffmpeg`
+
+You will need to authenticate to ngrok after installing it.
 
 Create a Python virtual environment and install dependencies:
 
