@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-from flask import Flask, url_for
-from twilio.twiml.voice_response import VoiceResponse
+from urllib.parse import unquote
+
+from flask import Flask, url_for, request
+from twilio.twiml.voice_response import Start, VoiceResponse
 from yt_dlp import YoutubeDL
 
 app = Flask(__name__)
@@ -9,7 +11,7 @@ app = Flask(__name__)
 
 def download_song(search_term: str) -> str | None:
     # Get first search result from Youtube
-    print(f'searching YouTube for "{search_term}"')
+    print(f"searching YouTube for {search_term}")
     ydl_opts = {
         "default_search": "ytsearch",  # Search on YouTube
         "quiet": True,  # Suppress logging
@@ -51,21 +53,49 @@ def download_song(search_term: str) -> str | None:
     return "song.mp3"
 
 
+@app.route("/handle-transcribe", methods=["POST"])
+def handle_transcribe():
+    data = request.get_data().decode("utf-8")
+    parsed = {d.split("=")[0]: d.split("=")[1] for d in data.split("&")}
+    if parsed["TranscriptionEvent"] != "transcription-content":
+        return "", 200
+
+    # Extract words from data
+    content = unquote(parsed["TranscriptionData"])
+    words = content.split(",")[0].split(":")[1]
+    words = words.strip().lower()
+
+    # Filter unnecessary words
+    filtered = words.replace("play ", "")
+
+    # Download song during <Pause>
+    download_song(filtered)
+    return "", 200
+
+
 @app.route("/answer", methods=["GET", "POST"])
 def answer():
-    print("taking incoming call...")
     response = VoiceResponse()
+    response.say("just say play followed by the song name")
 
-    # Get voice command
+    start = Start()
+    start.transcription(
+        name="Voice search",
+        profanity_filter=False,
+        track="inbound_track",
+        enable_automatic_punctuation=False,
+        status_callback_url="https://clever-pigeon-integral.ngrok-free.app/handle-transcribe",
+    )
+    response.append(start)
 
-    search = "ric flair drip"
+    # Wait for song to finish download then start playing
+    response.pause(25)
+    response.play(url_for("static", filename="song.mp3"))
 
-    # Fetch desired song
-    filename = download_song(search)
-
-    # Serve song
-    print("playing song...")
-    response.play(url_for("static", filename=filename))
+    # Restart
+    response.redirect(
+        "https://clever-pigeon-integral.ngrok-free.app/answer", method="GET"
+    )
 
     return str(response)
 
