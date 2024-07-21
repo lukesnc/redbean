@@ -63,8 +63,7 @@ def handle_transcribe():
     # Extract words from data
     content = unquote(parsed["TranscriptionData"])
     print(content)
-    words = content.split(",")[0].split(":")[1]
-    words = words.strip().lower()
+    words = content.split(",")[0].split(":")[1].strip().lower()
 
     # Filter unnecessary words
     filtered = words.replace("play ", "")
