@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import shutil
 from urllib.parse import unquote
 
 import flask
@@ -10,7 +11,6 @@ from yt_dlp import YoutubeDL
 
 DOMAIN = "https://clever-pigeon-integral.ngrok-free.app"
 app = flask.Flask(__name__)
-up_next: str | None = None
 
 
 def download_song(search_term: str) -> str | None:
@@ -72,8 +72,11 @@ def handle_transcribe():
     words = content.split(",")[0].split(":")[1].lower().replace('"', "").strip()
 
     # Download song during <Pause> and queue it
+    # Why does it have to work like this?
+    # Twilio has to know the file path before any of the downloading/searching occurs
     if filename := download_song(words):
-        up_next = filename
+        shutil.copy(src=f"static/{filename}", dst="static/song.mp3")
+        print(f"cp static/{filename} static/song.mp3")
 
     return "", 200
 
@@ -101,7 +104,7 @@ def answer():
     # Wait for song to finish download then start playing
     response.say("loading")
     response.pause(20)
-    response.play(flask.url_for("static", filename=up_next))
+    response.play(flask.url_for("static", filename="song.mp3"))
 
     # Restart
     response.redirect(f"{DOMAIN}/answer", method="GET")
