@@ -29,3 +29,10 @@ Start the app with:
 ```bash
 flask run
 ```
+
+## Caller Instructions
+1. Call `XXX-XXX-XXXX`
+2. Press any button to ignore the Twilio free account prompt
+3. After it greets you, say the name of the song or video you want to hear (examples: "porter robinson cheerleader" or "dracula flow 3")
+4. Redbean will download the requested media from YouTube then start playing it when it's done
+5. When the song is finished it will ask you what you want to hear next (back to Step 3)
