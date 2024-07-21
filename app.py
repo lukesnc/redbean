@@ -6,6 +6,8 @@ from flask import Flask, url_for, request
 from twilio.twiml.voice_response import Start, Stop, VoiceResponse
 from yt_dlp import YoutubeDL
 
+
+DOMAIN = "https://clever-pigeon-integral.ngrok-free.app"
 app = Flask(__name__)
 
 
@@ -91,7 +93,7 @@ def answer():
         profanity_filter=False,
         track="inbound_track",
         enable_automatic_punctuation=False,
-        status_callback_url="https://clever-pigeon-integral.ngrok-free.app/handle-transcribe",
+        status_callback_url=f"{DOMAIN}/handle-transcribe",
     )
     response.append(start)
     response.pause(5)
@@ -104,9 +106,7 @@ def answer():
     response.play(url_for("static", filename="song.mp3"))
 
     # Restart
-    response.redirect(
-        "https://clever-pigeon-integral.ngrok-free.app/answer", method="GET"
-    )
+    response.redirect(f"{DOMAIN}/answer", method="GET")
 
     return str(response)
 
