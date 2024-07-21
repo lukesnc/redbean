@@ -3,13 +3,12 @@
 from urllib.parse import unquote
 
 import flask
-from flask import Flask
 from twilio.twiml.voice_response import Start, Stop, VoiceResponse
 from yt_dlp import YoutubeDL
 
 
 DOMAIN = "https://clever-pigeon-integral.ngrok-free.app"
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 
 def download_song(search_term: str) -> None:
