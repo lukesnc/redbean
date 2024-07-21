@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 from urllib.parse import unquote
 
 import flask
@@ -9,9 +10,10 @@ from yt_dlp import YoutubeDL
 
 DOMAIN = "https://clever-pigeon-integral.ngrok-free.app"
 app = flask.Flask(__name__)
+up_next: str | None = None
 
 
-def download_song(search_term: str) -> None:
+def download_song(search_term: str) -> str | None:
     # Get first search result from Youtube
     print(f"searching YouTube for {search_term}")
     ydl_opts = {
@@ -24,16 +26,23 @@ def download_song(search_term: str) -> None:
     videos = search_results.get("entries", [])
     if not videos:
         print("no search results found")
-        return
+        return None
 
     url = videos[0]["webpage_url"]
+    video_id = url.split("=")[1]
+
+    # Check if video is already downloaded
+    filename = f"{video_id}.mp3"
+    if os.path.exists(f"static/{filename}"):
+        print(f"found cached file static/{filename}")
+        return filename
 
     # Download first result
     ydl_opts = {
         "format": "m4a/bestaudio/best",
         "restrictfilenames": True,
-        # "paths": {"home": "static"},
-        "outtmpl": "static/song",
+        "paths": {"home": "static"},
+        "outtmpl": "%(id)s",
         "postprocessors": [
             {  # Extract and convert audio using ffmpeg
                 "key": "FFmpegExtractAudio",
@@ -44,10 +53,10 @@ def download_song(search_term: str) -> None:
     }
     with YoutubeDL(ydl_opts) as ydl:
         error_code = ydl.download([url])
+    if error_code != 0:
+        return None
 
-    # TODO: the song will always overwrite to static/song.mp3 for now
-    # in the future we could have different filenames and cache them
-    # return filename
+    return filename
 
 
 @app.route("/handle-transcribe", methods=["POST"])
@@ -62,8 +71,10 @@ def handle_transcribe():
     print(content)
     words = content.split(",")[0].split(":")[1].lower().replace('"', "").strip()
 
-    # Download song during <Pause>
-    download_song(words)
+    # Download song during <Pause> and queue it
+    if filename := download_song(words):
+        up_next = filename
+
     return "", 200
 
 
@@ -90,7 +101,7 @@ def answer():
     # Wait for song to finish download then start playing
     response.say("loading")
     response.pause(20)
-    response.play(flask.url_for("static", filename="song.mp3"))
+    response.play(flask.url_for("static", filename=up_next))
 
     # Restart
     response.redirect(f"{DOMAIN}/answer", method="GET")
