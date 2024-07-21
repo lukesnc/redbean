@@ -63,10 +63,16 @@ def handle_transcribe():
     # Extract words from data
     content = unquote(parsed["TranscriptionData"])
     print(content)
-    words = content.split(",")[0].split(":")[1].strip().lower()
+    words = content.split(",")[0].split(":")[1].lower()
+    words = words.replace('"', "").strip()
+    print(words)
+
+    # Quit if first word isnt play (prevents downloading from random noises)
+    if words.split(" ")[0] != "play":
+        return "", 200
 
     # Filter unnecessary words
-    filtered = words.lstrip("play ")
+    filtered = words.removeprefix("play ")
 
     # Download song during <Pause>
     download_song(filtered)
@@ -88,13 +94,13 @@ def answer():
         status_callback_url="https://clever-pigeon-integral.ngrok-free.app/handle-transcribe",
     )
     response.append(start)
-    response.pause(7)
+    response.pause(5)
     stop = Stop()
     stop.transcription(name="Voice search")
 
     # Wait for song to finish download then start playing
     response.say("loading")
-    response.pause(17)
+    response.pause(20)
     response.play(url_for("static", filename="song.mp3"))
 
     # Restart
