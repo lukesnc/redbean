@@ -2,7 +2,8 @@
 
 from urllib.parse import unquote
 
-from flask import Flask, url_for, request
+import flask
+from flask import Flask
 from twilio.twiml.voice_response import Start, Stop, VoiceResponse
 from yt_dlp import YoutubeDL
 
@@ -52,7 +53,7 @@ def download_song(search_term: str) -> None:
 
 @app.route("/handle-transcribe", methods=["POST"])
 def handle_transcribe():
-    data = request.get_data().decode("utf-8")
+    data = flask.request.get_data().decode("utf-8")
     parsed = {d.split("=")[0]: d.split("=")[1] for d in data.split("&")}
     if parsed["TranscriptionEvent"] != "transcription-content":
         return "", 200
@@ -60,8 +61,7 @@ def handle_transcribe():
     # Extract words from data
     content = unquote(parsed["TranscriptionData"])
     print(content)
-    words = content.split(",")[0].split(":")[1].lower()
-    words = words.replace('"', "").strip()
+    words = content.split(",")[0].split(":")[1].lower().replace('"', "").strip()
 
     # Download song during <Pause>
     download_song(words)
@@ -91,7 +91,7 @@ def answer():
     # Wait for song to finish download then start playing
     response.say("loading")
     response.pause(20)
-    response.play(url_for("static", filename="song.mp3"))
+    response.play(flask.url_for("static", filename="song.mp3"))
 
     # Restart
     response.redirect(f"{DOMAIN}/answer", method="GET")
