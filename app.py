@@ -11,7 +11,7 @@ DOMAIN = "https://clever-pigeon-integral.ngrok-free.app"
 app = Flask(__name__)
 
 
-def download_song(search_term: str) -> str | None:
+def download_song(search_term: str) -> None:
     # Get first search result from Youtube
     print(f"searching YouTube for {search_term}")
     ydl_opts = {
@@ -24,7 +24,7 @@ def download_song(search_term: str) -> str | None:
     videos = search_results.get("entries", [])
     if not videos:
         print("no search results found")
-        return None
+        return
 
     url = videos[0]["webpage_url"]
 
@@ -44,13 +44,10 @@ def download_song(search_term: str) -> str | None:
     }
     with YoutubeDL(ydl_opts) as ydl:
         error_code = ydl.download([url])
-    if error_code != 0:
-        return None
 
-    # TODO: the song will always overwrite to this location for now
+    # TODO: the song will always overwrite to static/song.mp3 for now
     # in the future we could have different filenames and cache them
-    # in the static/ dir
-    return "song.mp3"
+    # return filename
 
 
 @app.route("/handle-transcribe", methods=["POST"])
