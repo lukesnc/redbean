@@ -6,7 +6,7 @@ This project uses [Twilio](https://www.twilio.com/en-us) to handle phone calls. 
 
 ## Setup
 
-You will need to install `ngrok ffmpeg ffprobe` via your system's package manager. Afterwards, authenticate to ngrok via the CLI.
+You will need to install `ngrok` and `ffmpeg` via your system's package manager. Afterwards, authenticate to ngrok via the CLI.
 
 Create a Python virtual environment and install dependencies:
 
