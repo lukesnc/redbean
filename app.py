@@ -67,24 +67,16 @@ def handle_transcribe():
     print(content)
     words = content.split(",")[0].split(":")[1].lower()
     words = words.replace('"', "").strip()
-    print(words)
-
-    # Quit if first word isnt play (prevents downloading from random noises)
-    if words.split(" ")[0] != "play":
-        return "", 200
-
-    # Filter unnecessary words
-    filtered = words.removeprefix("play ")
 
     # Download song during <Pause>
-    download_song(filtered)
+    download_song(words)
     return "", 200
 
 
 @app.route("/answer", methods=["GET", "POST"])
 def answer():
     response = VoiceResponse()
-    response.say("just say play followed by the song name")
+    response.say("just say the song or name of you tube video")
 
     # Do voice search
     start = Start()
