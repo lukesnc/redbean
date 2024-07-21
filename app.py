@@ -99,6 +99,7 @@ def answer():
     response.pause(5)
     stop = Stop()
     stop.transcription(name="Voice search")
+    response.append(stop)
 
     # Wait for song to finish download then start playing
     response.say("loading")
