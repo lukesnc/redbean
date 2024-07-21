@@ -42,10 +42,8 @@ def download_song(search_term: str) -> str | None:
             }
         ],
     }
-
     with YoutubeDL(ydl_opts) as ydl:
         error_code = ydl.download([url])
-
     if error_code != 0:
         return None
 
