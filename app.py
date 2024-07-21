@@ -11,7 +11,6 @@ from yt_dlp import YoutubeDL
 
 DOMAIN = "https://clever-pigeon-integral.ngrok-free.app"
 app = flask.Flask(__name__)
-up_next: str | None = None
 
 
 def download_song(search_term: str) -> str | None:
