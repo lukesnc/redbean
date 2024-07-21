@@ -3,7 +3,7 @@
 from urllib.parse import unquote
 
 from flask import Flask, url_for, request
-from twilio.twiml.voice_response import Start, VoiceResponse
+from twilio.twiml.voice_response import Start, Stop, VoiceResponse
 from yt_dlp import YoutubeDL
 
 app = Flask(__name__)
@@ -28,7 +28,7 @@ def download_song(search_term: str) -> str | None:
 
     # Download first result
     ydl_opts = {
-        "format": "best",
+        "format": "m4a/bestaudio/best",
         "restrictfilenames": True,
         # "paths": {"home": "static"},
         "outtmpl": "static/song",
@@ -62,6 +62,7 @@ def handle_transcribe():
 
     # Extract words from data
     content = unquote(parsed["TranscriptionData"])
+    print(content)
     words = content.split(",")[0].split(":")[1]
     words = words.strip().lower()
 
@@ -78,6 +79,7 @@ def answer():
     response = VoiceResponse()
     response.say("just say play followed by the song name")
 
+    # Do voice search
     start = Start()
     start.transcription(
         name="Voice search",
@@ -87,9 +89,13 @@ def answer():
         status_callback_url="https://clever-pigeon-integral.ngrok-free.app/handle-transcribe",
     )
     response.append(start)
+    response.pause(5)
+    stop = Stop()
+    stop.transcription(name="Voice search")
 
     # Wait for song to finish download then start playing
-    response.pause(25)
+    response.say("loading")
+    response.pause(20)
     response.play(url_for("static", filename="song.mp3"))
 
     # Restart
