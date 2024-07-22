@@ -81,8 +81,8 @@ def handle_transcribe():
     return "", 200
 
 
-@app.route("/answer", methods=["GET", "POST"])
-def answer():
+@app.route("/play-song", methods=["GET"])
+def play_song():
     response = VoiceResponse()
     response.say("just say the song or name of you tube video")
 
@@ -96,18 +96,31 @@ def answer():
         status_callback_url=f"{DOMAIN}/handle-transcribe",
     )
     response.append(start)
-    response.pause(5)
+    response.pause(6)
     stop = Stop()
     stop.transcription(name="Voice search")
     response.append(stop)
 
     # Wait for song to finish download then start playing
     response.say("loading")
-    response.pause(20)
+    response.pause(16)
     response.play(flask.url_for("static", filename="song.mp3"))
 
-    # Restart
-    response.redirect(f"{DOMAIN}/answer", method="GET")
+    # Restart main loop
+    response.redirect(f"{DOMAIN}/play-song", method="GET")
+
+    return str(response)
+
+
+@app.route("/answer", methods=["GET", "POST"])
+def answer():
+    # Wait 1.5s then press 5
+    response = VoiceResponse()
+    response.play("", digits="wwww5")
+    response.pause(2)
+
+    # Hand off to main loop
+    response.redirect(f"{DOMAIN}/play-song", method="GET")
 
     return str(response)
 
