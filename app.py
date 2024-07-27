@@ -117,7 +117,7 @@ def answer():
     # Wait 1.5s then press 5
     response = VoiceResponse()
     response.play("", digits="wwww5")
-    response.pause(2)
+    response.pause(13)
 
     # Hand off to main loop
     response.redirect(f"{DOMAIN}/play-song", method="GET")
