@@ -2,12 +2,11 @@
 
 import os
 import shutil
-from urllib.parse import unquote
+import urllib.parse
 
 import flask
 from twilio.twiml.voice_response import Start, Stop, VoiceResponse
 from yt_dlp import YoutubeDL
-
 
 DOMAIN = "https://clever-pigeon-integral.ngrok-free.app"
 app = flask.Flask(__name__)
@@ -67,7 +66,7 @@ def handle_transcribe():
         return "", 200
 
     # Extract words from data
-    content = unquote(parsed["TranscriptionData"])
+    content = urllib.parse.unquote(parsed["TranscriptionData"])
     print(content)
     words = content.split(",")[0].split(":")[1].lower().replace('"', "").strip()
 
