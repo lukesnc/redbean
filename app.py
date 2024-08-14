@@ -113,7 +113,7 @@ def play_song():
 
 @app.route("/answer", methods=["GET", "POST"])
 def answer():
-    # Wait 1.5s then press 5
+    # Wait 1.5s, press 5, wait 13s
     response = VoiceResponse()
     response.play("", digits="wwww5")
     response.pause(13)
